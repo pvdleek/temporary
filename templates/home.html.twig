@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    Hoi {{ app.user ? app.user.username : 'anoniempje' }}
+
+    <br /><br />
+    {% if app.user %}
+        {% if app.user.accounts | length > 0 %}
+            <table border="1">
+                <tr><thead><th>Nummer</th><th>Saldo</th><th>Laatste 3 transacties</th></thead></tr>
+                {% for account in app.user.accounts %}
+                    <tr>
+                        <td>{{ account.number }}</td>
+                        <td>&euro; {{ account.balance | number_format(2, '.', ',') }}</td>
+                        <td>
+                            {% for transaction in account.transactions | slice(0, 3) %}
+                                Tijdstip: {{ transaction.timestamp | date('d-m-Y H:i:s') }}, mutatie: &euro; {{ transaction.mutation | number_format(2, '.', ',') }}<br />
+                            {% else %}
+                                Geen transacties gevonden
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            Je hebt geen accounts
+        {% endif %}
+
+        <br /><br />
+
+        <a href="{{ path('change_password') }}">Wachtwoord wijzigen</a> - <a href="{{ path('app_logout') }}">Uitloggen</a>
+    {% else %}
+        <a href="{{ path('app_login') }}">Inloggen</a>
+    {% endif %}
+{% endblock %}
